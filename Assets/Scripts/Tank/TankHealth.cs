@@ -16,8 +16,8 @@ public class TankHealth : MonoBehaviour
     private float m_CurrentHealth;  
     private bool m_Dead;   
 
-    private bool m_IsInvincible = false;  
-    private bool m_collected = false;
+    private bool m_IsInvincible;  
+    private static bool m_collected;
     private GameObject PlayerTank;
     private Color newCol;
 
@@ -44,10 +44,10 @@ public class TankHealth : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (GameObject.Find("ShieldPowerUp") == null && !m_collected)
+        if (GameObject.Find("ShieldPowerUp") == null && !m_collected) 
         {
-            m_collected = true; // so it only happens once
-            m_IsInvincible = true; // indicate invincibility
+            m_IsInvincible = true;
+            m_collected = true;
             
             // change material
             foreach (Transform eachChild in PlayerTank.transform.GetChild(0))
@@ -55,19 +55,22 @@ public class TankHealth : MonoBehaviour
                 ColorUtility.TryParseHtmlString("#FFAB16", out newCol);
                 eachChild.GetComponent<Renderer>().materials[0].SetColor("_Color", newCol);
             }
+            
             StartCoroutine(removeInvincible());
         }
     }
 
     IEnumerator removeInvincible()
     {
-        yield return new WaitForSeconds(10.0f);
-        // change material back to normal
+        yield return new WaitForSeconds(15.0f);
+
+        // change material back
         foreach (Transform eachChild in PlayerTank.transform.GetChild(0))
         {
             ColorUtility.TryParseHtmlString("#2A64B2", out newCol);
             eachChild.GetComponent<Renderer>().materials[0].SetColor("_Color", newCol);
         }
+
         m_IsInvincible = false;
     }
 
@@ -102,5 +105,7 @@ public class TankHealth : MonoBehaviour
         m_ExplosionAudio.Play();
 
         gameObject.SetActive(false);
+
+        m_IsInvincible = false;
     }
 }

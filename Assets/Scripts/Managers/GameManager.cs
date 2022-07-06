@@ -21,7 +21,9 @@ public class GameManager : MonoBehaviour
     private WaitForSeconds m_StartWait;         
     private WaitForSeconds m_EndWait;           
     private TankManager m_RoundWinner;          
-    private TankManager m_GameWinner;           
+    private TankManager m_GameWinner;   
+
+    private int m_NumberToHide;       
 
 
     private void Start()
@@ -180,7 +182,12 @@ public class GameManager : MonoBehaviour
     }
 
     private void HideTanks() {
-        for (int i = 0; i < m_Tanks.Length-m_RoundNumber-2; i++) GameObject.FindGameObjectWithTag("Enemy").SetActive(false);
+        if (m_RoundNumber == m_Tanks.Length-1) {
+            m_NumberToHide = 0;
+        } else {
+            m_NumberToHide = m_Tanks.Length-m_RoundNumber-2;
+        }
+        for (int i = 0; i < m_NumberToHide; i++) GameObject.FindGameObjectWithTag("Enemy").SetActive(false);
     }
 
     private void EnableTankControl()
