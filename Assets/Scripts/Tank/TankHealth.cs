@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class TankHealth : MonoBehaviour
 {
@@ -13,8 +14,12 @@ public class TankHealth : MonoBehaviour
     private AudioSource m_ExplosionAudio;          
     private ParticleSystem m_ExplosionParticles;   
     private float m_CurrentHealth;  
-    private bool m_Dead;            
+    private bool m_Dead;   
 
+    private bool m_IsInvincible = false;  
+    private bool m_collected = false;
+    private GameObject PlayerTank;
+    private Color newCol;
 
     private void Awake()
     {
@@ -24,7 +29,6 @@ public class TankHealth : MonoBehaviour
         m_ExplosionParticles.gameObject.SetActive(false);
     }
 
-
     private void OnEnable()
     {
         m_CurrentHealth = m_StartingHealth;
@@ -33,13 +37,49 @@ public class TankHealth : MonoBehaviour
         SetHealthUI();
     }
 
+    void Start() 
+    {
+        PlayerTank = GameObject.FindGameObjectWithTag("Player");
+    }
+
+    void FixedUpdate()
+    {
+        if (GameObject.Find("ShieldPowerUp") == null && !m_collected)
+        {
+            m_collected = true; // so it only happens once
+            m_IsInvincible = true; // indicate invincibility
+            
+            // change material
+            foreach (Transform eachChild in PlayerTank.transform.GetChild(0))
+            {
+                ColorUtility.TryParseHtmlString("#FFAB16", out newCol);
+                eachChild.GetComponent<Renderer>().materials[0].SetColor("_Color", newCol);
+            }
+            StartCoroutine(removeInvincible());
+        }
+    }
+
+    IEnumerator removeInvincible()
+    {
+        yield return new WaitForSeconds(10.0f);
+        // change material back to normal
+        foreach (Transform eachChild in PlayerTank.transform.GetChild(0))
+        {
+            ColorUtility.TryParseHtmlString("#2A64B2", out newCol);
+            eachChild.GetComponent<Renderer>().materials[0].SetColor("_Color", newCol);
+        }
+        m_IsInvincible = false;
+    }
+
     public void TakeDamage(float amount)
     {
-        // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
-        m_CurrentHealth -= amount;
+        if (!(this == PlayerTank.GetComponent<TankHealth>() && m_IsInvincible)) {
+            // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
+            m_CurrentHealth -= amount;
 
-        SetHealthUI();
-        if (m_CurrentHealth <= 0f && !m_Dead) OnDeath();
+            SetHealthUI();
+            if (m_CurrentHealth <= 0f && !m_Dead) OnDeath();
+        }
     }
 
 

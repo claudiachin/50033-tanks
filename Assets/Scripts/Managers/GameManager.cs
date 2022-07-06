@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public int m_NumRoundsToWin = 5;            
+    public int m_NumRoundsToWin = 3;            
     public float m_StartDelay = 3f;             
     public float m_EndDelay = 3f;               
     public CameraControl m_CameraControl;       
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
             Instantiate(m_TankPrefabs[0], m_Tanks[0].m_SpawnPoint.position, m_Tanks[0].m_SpawnPoint.rotation) as GameObject;
         m_Tanks[0].m_PlayerNumber = 1;
         m_Tanks[0].SetupPlayerTank();
-
+        
         for (int i = 1; i < m_Tanks.Length; i++)
         {
             m_Tanks[i].m_Instance =
@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundStarting()
     {
         ResetAllTanks();
+        HideTanks();
         DisableTankControl();
 
         m_CameraControl.SetStartPositionAndSize();
@@ -178,6 +179,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_Tanks.Length; i++) m_Tanks[i].Reset();
     }
 
+    private void HideTanks() {
+        for (int i = 0; i < m_Tanks.Length-m_RoundNumber-2; i++) GameObject.FindGameObjectWithTag("Enemy").SetActive(false);
+    }
 
     private void EnableTankControl()
     {
