@@ -62,7 +62,7 @@ public class TankHealth : MonoBehaviour
 
     IEnumerator removeInvincible()
     {
-        yield return new WaitForSeconds(15.0f);
+        yield return new WaitForSeconds(10.0f);
 
         // change material back
         foreach (Transform eachChild in PlayerTank.transform.GetChild(0))
